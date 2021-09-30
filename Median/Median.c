@@ -42,19 +42,6 @@
 #endif
 
 /**
- *! ==================================================================================
- *!                           ##### Private Functions #####                               
- *! ==================================================================================
- **/
-
-int
-ssf_M_QSortFunction (const void *FirstParam,const void *SecondParam)
-{
-    if ((*(DatatypeUsed*)FirstParam) > (*(DatatypeUsed *)SecondParam)) return 1; // Bigger to lower
-    else return -1;
-}
-
-/**
  ** ==================================================================================
  **                           ##### Public Functions #####                               
  ** ==================================================================================
@@ -63,28 +50,33 @@ ssf_M_QSortFunction (const void *FirstParam,const void *SecondParam)
 /**
  * @brief  Initializes The Library
  * @note   Must be called at first and once
- * @param  M_ControlBlock: Pointer Of Library Handler
- * @param  windowSize:     Window Size
- * @param  buffer:         Pointer Of window buffer | Number of Element: At least windowSize
- * @param  tempBuffer:     Pointer Of window temp buffer | Number of Element: At least windowSize
+ * @param  M_ControlBlock:   Pointer Of Library Handler
+ * @param  windowSize:       Window Size        
+ * @param  buffer:           Pointer Of window buffer | Number of Element: At least windowSize
+ * @param  tempBuffer:       Pointer Of window temp buffer | Number of Element: At least windowSize
+ * @param  SortFuncMAXtoMIN  Pointer Of sorting function (From MAX[0] to MIN[NumOfEl - 1] | Descending order)
+ *         @param ArrToSort: Pointer of array to sort
+ *         @param LowIDX:    The lowest index to sort
+ *         @param HighIDX:   The highest index to sort
  * @retval None
  */
 void
-ssf_M_Init(Median_t *M_ControlBlock, uint16_t windowSize, DatatypeUsed *buffer, DatatypeUsed *tempBuffer)
+ssf_M_Init(Median_t *M_ControlBlock, uint16_t windowSize, DatatypeUsed *buffer, DatatypeUsed *tempBuffer, void (* SortFuncMAXtoMIN)(DatatypeUsed *ArrToSort, const int16_t LowIDX, const int16_t HighIDX))
 {
-    if (M_ControlBlock && buffer && tempBuffer)
+    if (M_ControlBlock && buffer && tempBuffer && SortFuncMAXtoMIN)
     {
         M_ControlBlock->Count = 0;
         M_ControlBlock->FirstCounter = 0;
-        M_ControlBlock->Window = windowSize;
+        M_ControlBlock->Window = windowSize ? windowSize : 1;
         M_ControlBlock->Buffer = buffer;
         M_ControlBlock->TempBuffer = tempBuffer;
+        M_ControlBlock->SortMAXtoMIN = SortFuncMAXtoMIN;
         if (windowSize % 2 == 0)
             M_ControlBlock->isEven = true;
         else 
             M_ControlBlock->isEven = false;
-        memset(buffer, 0, windowSize);
-        memset(tempBuffer, 0, windowSize);
+        memset(buffer, 0, windowSize * sizeof(DatatypeUsed));
+        memset(tempBuffer, 0, windowSize * sizeof(DatatypeUsed));
     }
 }
 
@@ -102,7 +94,7 @@ ssf_M_GetData(Median_t *M_ControlBlock, DatatypeUsed value)
     {
         M_ControlBlock->Buffer[M_ControlBlock->Count] = value;
         memcpy(M_ControlBlock->TempBuffer, M_ControlBlock->Buffer, M_ControlBlock->Window * sizeof(DatatypeUsed));
-        qsort(M_ControlBlock->TempBuffer, M_ControlBlock->Window, sizeof(DatatypeUsed), ssf_M_QSortFunction);
+        M_ControlBlock->SortMAXtoMIN(M_ControlBlock->TempBuffer, 0, M_ControlBlock->Window - 1);
 
         if(M_ControlBlock->Count < (M_ControlBlock->Window - 1))
             M_ControlBlock->Count++;
@@ -128,3 +120,36 @@ ssf_M_GetData(Median_t *M_ControlBlock, DatatypeUsed value)
     return 0;
 }
 
+/**
+ * @brief  Sorts data from Maximum to Minimum (Quick Sort: Descending order) - Recommended
+ * @note   You can use it as sort function. For more Information see http://www.liangshunet.com/en/202007/153509174.htm
+ * @param  arr:   Pointer Of array to sort
+ * @param  left:  The lowest index to sort
+ * @param  right: The highest index to sort
+ * @retval None
+ */
+void QuickSort(float *arr, int16_t left, int16_t right)
+{
+    int16_t i = left;
+    int16_t j = right;
+    float temp = arr[i];
+
+    if (left < right)
+    {
+        while (i < j)
+        {
+            while (arr[j] <= temp && i < j)
+                j--;
+            arr[i] = arr[j];
+
+            while (arr[i] >= temp && i < j)
+                i++;
+            arr[j] = arr[i];
+
+        }
+        arr[i] = temp;
+
+        QuickSort(arr, left, i - 1);
+        QuickSort(arr, j + 1, right);
+    }
+}

@@ -61,11 +61,11 @@ ssf_MA_Init(MovingAverage_t *MA_ControlBlock, uint16_t windowSize, DatatypeUsed 
     if (MA_ControlBlock && buffer)
     {
         MA_ControlBlock->Count = 0;
-        MA_ControlBlock->Window = windowSize;
+        MA_ControlBlock->Window = windowSize ? windowSize : 1;
         MA_ControlBlock->Sum = 0;
         MA_ControlBlock->divideCounter = 0;
         MA_ControlBlock->Buffer = buffer;
-        memset(buffer, 0, windowSize);
+        memset(buffer, 0, windowSize * sizeof(DatatypeUsed));
     }
 }
 
