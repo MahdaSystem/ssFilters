@@ -15,9 +15,9 @@ A signal compared by different window width of this filter is shown in Docs dire
 * Series7: Width 30
 * Series8: Width 100
 
- ![Moving Average Data Output](.../MovingAverage/Docs/Image.png)
+ ![Moving Average Data Output](/MovingAverage/Docs/Image.png)
 
 ### Median
 *Information will be added later!*
 
- ![Median Data Output](.../Median/Docs/Image.png)
+ ![Median Data Output](/Median/Docs/Image.png)
