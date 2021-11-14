@@ -58,6 +58,7 @@
  *         @param ArrToSort: Pointer of array to sort
  *         @param LowIDX:    The lowest index to sort
  *         @param HighIDX:   The highest index to sort
+ *         @note  You can pass it as NULL to use default function (QuickSort)
  * @retval None
  */
 void
@@ -128,7 +129,8 @@ ssf_M_GetData(Median_t *M_ControlBlock, DatatypeUsed value)
  * @param  right: The highest index to sort
  * @retval None
  */
-void QuickSort(float *arr, int16_t left, int16_t right)
+void 
+QuickSort(float *arr, int16_t left, int16_t right)
 {
     int16_t i = left;
     int16_t j = right;
