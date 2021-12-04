@@ -95,7 +95,7 @@ ssf_M_GetData(Median_t *M_ControlBlock, DatatypeUsed value)
     {
         M_ControlBlock->Buffer[M_ControlBlock->Count] = value;
         memcpy(M_ControlBlock->TempBuffer, M_ControlBlock->Buffer, M_ControlBlock->Window * sizeof(DatatypeUsed));
-        M_ControlBlock->SortMAXtoMIN(M_ControlBlock->TempBuffer, 0, M_ControlBlock->Window - 1);
+        M_ControlBlock->SortMAXtoMIN(M_ControlBlock->TempBuffer, 0, M_ControlBlock->FirstCounter);
 
         if(M_ControlBlock->Count < (M_ControlBlock->Window - 1))
             M_ControlBlock->Count++;
